@@ -42,8 +42,8 @@ jobs:
         continue-on-error: true
 
       - name: Run Snyk to check for vulnerabilities
+        if: env.SNYK_TOKEN != null
         uses: snyk/actions/python@master
-        if: ${{ secrets.SNYK_TOKEN != '' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
