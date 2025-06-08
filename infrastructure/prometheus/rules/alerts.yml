@@ -1,0 +1,83 @@
+groups:
+- name: GenAIMLOps
+  rules:
+  - alert: HighRequestLatency
+    expr: rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m]) > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High request latency
+      description: "Average request latency is above 1 second for the last 5 minutes"
+
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: High error rate
+      description: "Error rate is above 5% for the last 5 minutes"
+
+  - alert: PodRestart
+    expr: changes(kube_pod_container_status_restarts_total{namespace="default"}[1h]) > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Pod restarting frequently
+      description: "Pod {{ $labels.pod }} has restarted more than 2 times in the last hour"
+
+  - alert: HighCPUUsage
+    expr: container_cpu_usage_seconds_total{container!=""} > 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High CPU usage
+      description: "Container {{ $labels.container }} is using more than 80% CPU"
+
+  - alert: HighMemoryUsage
+    expr: container_memory_usage_bytes{container!=""} / container_memory_max_usage_bytes > 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High memory usage
+      description: "Container {{ $labels.container }} is using more than 80% memory"
+
+  - alert: ModelPredictionLatency
+    expr: rate(model_prediction_duration_seconds_sum[5m]) / rate(model_prediction_duration_seconds_count[5m]) > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High model prediction latency
+      description: "Model predictions are taking more than 2 seconds on average"
+
+  - alert: GPUMemoryUsage
+    expr: nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes > 0.9
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High GPU memory usage
+      description: "GPU {{ $labels.gpu }} is using more than 90% of its memory"
+
+  - alert: MLflowUnavailable
+    expr: up{job="mlflow"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: MLflow is down
+      description: "MLflow service has been down for more than 5 minutes"
+
+  - alert: ModelDrift
+    expr: model_prediction_drift > 0.3
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: Model drift detected
+      description: "Model predictions have drifted more than 30% from baseline" 

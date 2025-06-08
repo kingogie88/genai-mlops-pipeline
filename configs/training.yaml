@@ -1,0 +1,69 @@
+# Model Configuration
+model:
+  name: "gpt2"  # Base model to fine-tune
+  max_length: 512
+
+# Data Configuration
+data:
+  name: "wikitext"
+  split: "train"
+  max_length: 512
+  validation_split: 0.1
+  preprocessing:
+    lowercase: true
+    remove_special_chars: true
+
+# Training Configuration
+training:
+  output_dir: "models/fine_tuned"
+  num_epochs: 3
+  batch_size: 8
+  learning_rate: 2e-5
+  warmup_steps: 500
+  weight_decay: 0.01
+  logging_dir: "logs"
+  logging_steps: 100
+  save_steps: 1000
+  eval_steps: 1000
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0
+
+# MLflow Configuration
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "gpt2-fine-tuning"
+  tags:
+    model_type: "language-model"
+    task: "text-generation"
+
+# Optimization
+optimization:
+  fp16: true
+  gradient_checkpointing: true
+
+# Evaluation
+evaluation:
+  metrics:
+    - "perplexity"
+    - "bleu"
+    - "rouge"
+  generate_samples: true
+  num_samples: 10
+
+# Hardware
+hardware:
+  use_cuda: true
+  num_workers: 4
+  pin_memory: true
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  to_file: true
+  file_path: "logs/training.log"
+
+# Security
+security:
+  enable_wandb: false  # Disable external logging services
+  save_model_to_hub: false  # Don't push to HuggingFace Hub 
